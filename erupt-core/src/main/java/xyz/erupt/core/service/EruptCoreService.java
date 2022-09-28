@@ -52,6 +52,11 @@ public class EruptCoreService implements ApplicationRunner {
         return ERUPTS.get(eruptName);
     }
 
+    public static boolean putErupt(String eruptName,EruptModel eruptModel) {
+        ERUPTS.put(eruptName,eruptModel);
+        return true;
+    }
+
     //动态注册erupt类
     public static void registerErupt(Class<?> eruptClazz) {
         if (ERUPTS.containsKey(eruptClazz.getSimpleName())) {
@@ -82,7 +87,7 @@ public class EruptCoreService implements ApplicationRunner {
         return em;
     }
 
-    private static EruptModel initEruptModel(Class<?> clazz) {
+    public static EruptModel initEruptModel(Class<?> clazz) {
         // erupt class data to memory
         EruptModel eruptModel = new EruptModel(clazz);
         // erupt field data to memory

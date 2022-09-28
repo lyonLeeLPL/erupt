@@ -5,10 +5,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import groovy.lang.GroovyClassLoader;
 import org.hibernate.*;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import xyz.erupt.core.controller.EruptModifyController;
 import xyz.erupt.core.invoke.DataProcessorManager;
 import xyz.erupt.core.service.EruptCoreService;
 import xyz.erupt.core.view.EruptModel;
@@ -129,6 +130,18 @@ public class Test2Controller {
     }
 
     public void createSession(Class _class){
+        SessionFactory factory = null;
+
+        Configuration configuration = new Configuration().configure();
+
+        configuration.addClass(_class);
+
+        ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+
+        factory = configuration.buildSessionFactory(registry);
+
+        Session session = factory.openSession();
+
         Date date = new Date();
         SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyyMMdd");
         String now_time = simpledateformat.format(date);

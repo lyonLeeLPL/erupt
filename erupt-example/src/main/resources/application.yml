@@ -1,0 +1,75 @@
+erupt-app:
+  # 登录失败几次，需要验证码
+  verifyCodeCount: 2
+erupt:
+  # 是否开启csrf防御
+  csrfInspect: true
+  # 是否开启redis方式存储session，默认false，开启后需在配置文件中添加redis配置（同 spring boot）
+  redisSession: false
+  # 附件上传存储路径, 默认路径为：/opt/erupt-attachment
+  uploadPath: C:/erupt/attachment
+  # 是否保留上传文件原始名称
+  keepUploadFileName: false
+  # 登录session时长（redisSession为true时有效）
+  upms.expireTimeByLogin: 60
+  # 是否记录操作日志，默认true，该功能开启后可在【系统管理 → 操作日志】中查看操作日志
+  security.recordOperateLog: true
+
+magic-api:
+  web: /magic/web
+  # 接口配置文件存放路径
+  resource.location: C:/erupt/magic-script
+  show-url: false
+
+spring:
+  redis:
+    host: 152.70.87.42 # Redis服务器地址
+    database: 1 # Redis数据库索引（默认为0）
+    port: 36379 # Redis服务器连接端口
+    password: 5601564a # Redis服务器连接密码（默认为空）
+    timeout: 3000ms # 连接超时时间
+  data:
+    mongodb:
+      host: 152.70.87.42 # mongodb的连接地址
+      port: 37017 # mongodb的连接端口号
+      database: ba_stock # mongodb的连接的数据库
+  datasource:
+    url: jdbc:mysql://152.70.87.42:33306/erupt-example?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 5601564a
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: mysql
+  mail:
+    username: xxxx@qq.com
+    password: xxxxxxx
+    host: smtp.qq.com
+    properties:
+      mail.smtp.ssl.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.required: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  #Thymeleaf配置
+  thymeleaf:
+    prefix: classpath:/templates/
+    cache: false
+    suffix: .html
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+
+server:
+  # 启用 gzip 压缩
+  compression:
+    mime-types: application/javascript,text/css,application/json,application/xml,text/html,text/xml,text/plain
+    enabled: true
+  error:
+    includeException: true
+    includeStacktrace: ALWAYS
+    includeMessage: ALWAYS
+  port : 18081

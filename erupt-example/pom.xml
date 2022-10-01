@@ -12,8 +12,8 @@
     </parent>
 
 
-    <artifactId>erupt-web</artifactId>
-    <name>erupt-web</name>
+    <artifactId>erupt-example</artifactId>
+    <name>erupt-example</name>
     <version>0.0.1-SNAPSHOT</version>
     <description>Demo project for Spring Boot</description>
 

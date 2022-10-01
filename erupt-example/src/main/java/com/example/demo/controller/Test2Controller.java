@@ -1,23 +1,58 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.jin_gen.NewTest;
+import com.example.demo.utils.JPASchemaExtractor2;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import groovy.lang.GroovyClassLoader;
 import org.hibernate.*;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.internal.SessionFactoryBuilderImpl;
+import org.hibernate.boot.model.relational.SqlStringGenerationContext;
+import org.hibernate.boot.model.relational.internal.SqlStringGenerationContextImpl;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
+import org.hibernate.engine.jdbc.spi.JdbcServices;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.event.spi.EventEngine;
+import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.mapping.MetadataSource;
 import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.spi.SessionFactoryServiceRegistry;
+import org.hibernate.service.spi.SessionFactoryServiceRegistryFactory;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.schema.TargetType;
+import org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl;
+import org.hibernate.tool.schema.internal.HibernateSchemaManagementTool;
+import org.hibernate.tool.schema.spi.DelayedDropAction;
+import org.hibernate.tool.schema.spi.ExecutionOptions;
+import org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.configurationprocessor.MetadataStore;
+import org.springframework.core.type.StandardClassMetadata;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.web.bind.annotation.*;
 import xyz.erupt.core.invoke.DataProcessorManager;
 import xyz.erupt.core.service.EruptCoreService;
+import xyz.erupt.core.util.EruptSpringUtil;
+import xyz.erupt.core.util.ReflectUtil;
 import xyz.erupt.core.view.EruptModel;
 import xyz.erupt.jpa.config.HibernateConfig;
 
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnitUtil;
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 
 @RestController
@@ -27,53 +62,54 @@ public class Test2Controller {
     private EruptCoreService eruptCoreService;
 
     @Autowired
-    private HibernateConfig hibernateConfig;
+    private LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean;
+
+    @Autowired
+    private EntityManagerFactory emf;
+
+    @Autowired
+    private JPASchemaExtractor2 jpaSchemaExtractor2;
 
 
-    @RequestMapping("/test2")
-    public Object test2( HttpServletRequest request) throws Exception {
-        String erupt = "NewTest";
-        JsonObject data = new JsonObject();
-        JsonObject jsonObject = new JsonObject();
+    @RequestMapping("/test33")
+    public Object test33( ) throws Exception {
+//        Map<String, String> settings = new HashMap<>();
+//        settings.put("connection.driver_class", "com.mysql.jdbc.Driver");
+//        settings.put("dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
+//        settings.put("hibernate.connection.url", "jdbc:mysql://152.70.87.42:33306/erupt-example?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai");
+//        settings.put("hibernate.connection.username", "root");
+//        settings.put("hibernate.connection.password", "5601564a");
+//        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+//                .applySettings(settings).build();
+//        MetadataSources metadataSources = new MetadataSources(serviceRegistry);
+//        Metadata metadata1 = metadataSources.buildMetadata();
+//        EnumSet<TargetType> enumSet = EnumSet.of(TargetType.STDOUT);
+//        SchemaExport schemaExport = new SchemaExport();
+//        schemaExport.execute(enumSet, SchemaExport.Action.BOTH, metadataSources.buildMetadata());
 
-        data.addProperty("my_key", "999");
+        StandardServiceRegistry standardServiceRegistry = new StandardServiceRegistryBuilder()
+                .applySettings(localContainerEntityManagerFactoryBean.getJpaPropertyMap())
+                .build();
 
-        EruptModel eruptModel = EruptCoreService.getErupt(erupt);
-        Gson gson = new Gson();
-        Object o = gson.fromJson(data.toString(), eruptModel.getClazz());
-
-        DataProcessorManager.getEruptDataProcessor(eruptModel.getClazz()).addData(eruptModel, o);
-        return null;
-    }
-
-    private static SessionFactory factory;
-    @RequestMapping("/test3")
-    public Object test3() throws Exception {
-        return null;
-    }
-    /* Method to CREATE an employee in the database */
-    public Integer addEmployee(String fname){
-        Session session = factory.openSession();
-        Transaction tx = null;
-        Integer employeeID = null;
-        try{
-            tx = session.beginTransaction();
-            JsonObject data = new JsonObject();
-            JsonObject jsonObject = new JsonObject();
-            data.addProperty("my_key", fname);
-
-            Gson gson = new Gson();
-            NewTest newTest = gson.fromJson(data.toString(), NewTest.class);
-
-            employeeID = (Integer) session.save(newTest);
-            tx.commit();
-        }catch (HibernateException e) {
-            if (tx!=null) tx.rollback();
-            e.printStackTrace();
-        }finally {
-            session.close();
+        MetadataSources metadata = new MetadataSources(standardServiceRegistry);
+        List<String> managedClassNames = localContainerEntityManagerFactoryBean.getPersistenceUnitInfo().getManagedClassNames();
+        for (String managedClassName : managedClassNames) {
+            metadata.addAnnotatedClassName(managedClassName);
         }
-        return employeeID;
+
+        MetadataImplementor metadataImplementor = (MetadataImplementor) metadata.getMetadataBuilder().build();
+        Map<String, Object> jpaPropertyMap = localContainerEntityManagerFactoryBean.getJpaPropertyMap();
+        SchemaManagementToolCoordinator.process(metadataImplementor, standardServiceRegistry, jpaPropertyMap, null);
+
+//metadata.addAnnotatedClass(Player.class);
+        return null;
+    }
+
+
+    @RequestMapping("/test44")
+    public Object test44( ) throws Exception {
+        jpaSchemaExtractor2.run(null);
+        return null;
     }
 
 
@@ -120,6 +156,7 @@ public class Test2Controller {
         EruptCoreService.getErupts().add(eruptModel);
 
         JsonObject data = new JsonObject();
+        createSession(clazz);
 
         data.addProperty("my_key", "999");
         Gson gson = new Gson();
@@ -130,39 +167,31 @@ public class Test2Controller {
     }
 
     public void createSession(Class _class){
-        SessionFactory factory = null;
+//        Configuration configuration = new Configuration();
+//        configuration.addClass(_class);
+//        configuration.configure("hibernate.cfg.xml");
 
-        Configuration configuration = new Configuration().configure();
+//        Properties prop= new Properties();
+//
+//        prop.setProperty("hibernate.connection.url", "jdbc:mysql://<your-host>:<your-port>/<your-dbname>");
+//
+//        //You can use any database you want, I had it configured for Postgres
+//        prop.setProperty("dialect", "org.hibernate.dialect.PostgresSQL");
+//
+//        prop.setProperty("hibernate.connection.username", "<your-user>");
+//        prop.setProperty("hibernate.connection.password", "<your-password>");
+//        prop.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
+//        prop.setProperty("show_sql", "true"); //If you wish to see the generated sql query
+//
+//        SessionFactory sessionFactory = new Configuration().addProperties(prop).buildSessionFactory();
+//        Session session = sessionFactory.openSession();
+//        SchemaManagementToolCoordinator.process(metadata, this.serviceRegistry, this.properties, (action) -> {
+//            this.delayedDropAction = action;
+//        });
 
-        configuration.addClass(_class);
+        SessionFactoryImplementor sessionFactory = emf.unwrap(SessionFactoryImplementor.class);
+        ServiceRegistry serviceRegistry = sessionFactory.getServiceRegistry();
 
-        ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-
-        factory = configuration.buildSessionFactory(registry);
-
-        Session session = factory.openSession();
-
-        Date date = new Date();
-        SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyyMMdd");
-        String now_time = simpledateformat.format(date);
-        String tablename = "TBL_REPORT_STATUS_20050707";
-        tablename = "TBL_REPORT_STATUS_" + now_time;
-        try {
-//            Configuration cfg = new Configuration().addClass(_class).configure();
-//            Table table = cfg.getClassMapping(_class).getTable();
-//            table.setName(tablename);
-//            cfg.getClassMapping(TblReportStatus.class).setTable(table);
-//            sessionFactory  = cfg.buildSessionFactory();
-
-            Configuration cfg = new Configuration().addClass(_class).configure();
-            cfg.getSqlResultSetMappings();
-            SessionFactory factory = cfg.configure().buildSessionFactory();
-        }
-        catch (MappingException ex) {
-            ex.printStackTrace();
-        }catch (HibernateException ex) {
-            ex.printStackTrace();
-        }
     }
 
 }

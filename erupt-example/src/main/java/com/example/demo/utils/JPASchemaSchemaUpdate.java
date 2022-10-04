@@ -10,6 +10,7 @@ import org.hibernate.boot.spi.MetadataImplementor;
 
 import org.hibernate.internal.SessionFactoryImpl;
 
+import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,10 @@ public class JPASchemaSchemaUpdate implements ApplicationRunner {
         for (String managedClassName : managedClassNames) {
             metadata.addAnnotatedClassName(managedClassName);
         }
+        Class<?> aClass1 = Class.forName("com.example.demo.model.Test0925");
+        metadata.addAnnotatedClass(aClass1);
+        metadata.addAnnotatedClassName("com.example.demo.model.Test0925");
+
         MetadataImplementor metadataImplementor = (MetadataImplementor) metadata.getMetadataBuilder().build();
 
         SchemaUpdate schemaUpdate = new SchemaUpdate();
@@ -60,10 +65,34 @@ public class JPASchemaSchemaUpdate implements ApplicationRunner {
         schemaUpdate.setDelimiter(";");
         schemaUpdate.setFormat(false);
 //
-        EnumSet<TargetType> enumSet = EnumSet.of(TargetType.STDOUT);
+        EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
         schemaUpdate.execute( enumSet , metadataImplementor);
-
     }
+
+    public void runForClass(ApplicationArguments args,Class aClass1) throws Exception {
+        SessionFactoryImpl nativeEntityManagerFactory = (SessionFactoryImpl)fb.getNativeEntityManagerFactory();
+        StandardServiceRegistry serviceRegistry = nativeEntityManagerFactory.getSessionFactoryOptions().getServiceRegistry();
+        MetadataSources metadata = new MetadataSources(serviceRegistry);
+        List<String> managedClassNames = fb.getPersistenceUnitInfo().getManagedClassNames();
+        for (String managedClassName : managedClassNames) {
+            metadata.addAnnotatedClassName(managedClassName);
+        }
+        metadata.addAnnotatedClass(aClass1);
+
+        MetadataImplementor metadataImplementor = (MetadataImplementor) metadata.getMetadataBuilder().build();
+
+        SchemaUpdate schemaUpdate = new SchemaUpdate();
+
+        schemaUpdate.setOutputFile(getOutputFilename());
+
+        schemaUpdate.setDelimiter(";");
+        schemaUpdate.setFormat(false);
+//
+        EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+        schemaUpdate.execute( enumSet , metadataImplementor);
+    }
+
+
 
 
     private static String getOutputFilename() {

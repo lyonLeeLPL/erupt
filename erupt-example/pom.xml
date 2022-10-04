@@ -114,14 +114,36 @@
             <version>1.7</version>
         </dependency>
 
-
-        <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
+        <!-- https://mvnrepository.com/artifact/net.openhft/compiler -->
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>3.0.9</version>
-            <type>pom</type>
+            <groupId>net.openhft</groupId>
+            <artifactId>compiler</artifactId>
+            <version>2.23ea1-force</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>23.0.0</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.28.0-GA</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.sun</groupId>-->
+<!--            <artifactId>tools</artifactId>-->
+<!--            <version>1.4.2</version>-->
+<!--            <scope>system</scope>-->
+<!--            &lt;!&ndash;只需要修改这里的路径，把 ../ 向上一层去掉即可&ndash;&gt;-->
+<!--            <systemPath>${java.home}/lib/tools.jar</systemPath>-->
+<!--        </dependency>-->
+
     </dependencies>
 
     <build>

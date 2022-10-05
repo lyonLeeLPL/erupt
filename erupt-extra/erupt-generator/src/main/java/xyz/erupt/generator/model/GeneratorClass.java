@@ -16,6 +16,7 @@ import xyz.erupt.annotation.sub_field.EditType;
 import xyz.erupt.annotation.sub_field.View;
 import xyz.erupt.annotation.sub_field.sub_edit.Search;
 import xyz.erupt.generator.base.GeneratorType;
+import xyz.erupt.generator.handler.OperationHandlerImpl;
 import xyz.erupt.jpa.model.MetaModel;
 
 import javax.persistence.*;
@@ -24,13 +25,20 @@ import java.util.Set;
 
 @EruptI18n
 @Erupt(name = "生成Erupt代码",
-        rowOperation = @RowOperation(
-                title = "代码预览", icon = "fa fa-code",
-                mode = RowOperation.Mode.SINGLE, type = RowOperation.Type.TPL,
-                tpl = @Tpl(path = "generator/erupt-code-skeleton.ftl",
-                        engine = Tpl.Engine.FreeMarker,
-                        tplHandler = GeneratorClass.class)
-        )
+        rowOperation = {
+                @RowOperation(
+                        title = "代码预览", icon = "fa fa-code",
+                        mode = RowOperation.Mode.SINGLE, type = RowOperation.Type.TPL,
+                        tpl = @Tpl(path = "generator/erupt-code-skeleton.ftl",
+                                engine = Tpl.Engine.FreeMarker,
+                                tplHandler = GeneratorClass.class)
+                ),
+                @RowOperation(
+                        title = "代码同步", icon = "fa fa-refresh",
+                        mode = RowOperation.Mode.SINGLE,
+                        operationHandler = OperationHandlerImpl.class
+                ),
+        }
 )
 @Table(name = "e_generator_class")
 @Entity

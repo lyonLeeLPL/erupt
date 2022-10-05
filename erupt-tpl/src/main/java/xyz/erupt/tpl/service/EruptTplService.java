@@ -1,15 +1,16 @@
 package xyz.erupt.tpl.service;
 
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.stereotype.Service;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.Assert;
-import org.springframework.util.LinkedCaseInsensitiveMap;
-import org.springframework.util.PathMatcher;
+import org.springframework.util.*;
 import xyz.erupt.annotation.sub_erupt.Tpl;
 import xyz.erupt.core.service.EruptApplication;
 import xyz.erupt.core.util.EruptSpringUtil;
@@ -20,7 +21,7 @@ import xyz.erupt.tpl.engine.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -74,6 +75,10 @@ public class EruptTplService {
 
     @Resource
     private HttpServletResponse response;
+
+    public static Map<Tpl.Engine, EngineTemplate<Object>> getTplEngines() {
+        return tplEngines;
+    }
 
     public void run() {
         EruptSpringUtil.scannerPackage(EruptApplication.getScanPackage(),
@@ -147,6 +152,27 @@ public class EruptTplService {
         EngineTemplate<Object> engineAbstractTemplate = tplEngines.get(engine);
         Assert.notNull(engineAbstractTemplate, engine.name() + " jar not found");
         engineAbstractTemplate.render(engineAbstractTemplate.getEngine(), path, map, writer);
+    }
+
+    /**
+     *
+     * @param engine
+     * @param path
+     * @param map
+     * @return
+     */
+    @SneakyThrows
+    public String tplRender2Str(Tpl.Engine engine, String path, Map<String, Object> map) {
+        map = Optional.ofNullable(map).orElse(new HashMap<>());
+        map.put(EngineConst.INJECT_BASE, request.getContextPath());
+        EngineTemplate<Object> engineAbstractTemplate = tplEngines.get(engine);
+        Assert.notNull(engineAbstractTemplate, engine.name() + " jar not found");
+
+        StringBuilderWriter stringBuilderWriter = new StringBuilderWriter();
+        engineAbstractTemplate.render(engineAbstractTemplate.getEngine(), "generator/erupt-code.java", map, stringBuilderWriter);
+        stringBuilderWriter.close();
+
+        return stringBuilderWriter.toString();
     }
 
 }

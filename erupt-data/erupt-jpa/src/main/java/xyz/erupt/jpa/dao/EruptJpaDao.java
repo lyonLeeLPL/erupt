@@ -1,5 +1,6 @@
 package xyz.erupt.jpa.dao;
 
+import org.aopalliance.intercept.MethodInterceptor;
 import org.springframework.stereotype.Repository;
 import xyz.erupt.annotation.query.Condition;
 import xyz.erupt.core.annotation.EruptDataSource;
@@ -11,10 +12,12 @@ import xyz.erupt.core.view.Page;
 import xyz.erupt.jpa.service.EntityManagerService;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author YuePeng
@@ -55,7 +58,8 @@ public class EruptJpaDao {
     public Page queryEruptList(EruptModel eruptModel, Page page, EruptQuery eruptQuery) {
         String hql = EruptJpaUtils.generateEruptJpaHql(eruptModel, "new map(" + String.join(",", EruptJpaUtils.getEruptColJpaKeys(eruptModel)) + ")", eruptQuery, false);
         String countHql = EruptJpaUtils.generateEruptJpaHql(eruptModel, "count(*)", eruptQuery, true);
-        return entityManagerService.getEntityManager(eruptModel.getClazz(), entityManager -> {
+
+        Function<EntityManager, Page > function = entityManager -> {
             Query query = entityManager.createQuery(hql);
             Query countQuery = entityManager.createQuery(countHql);
             Map<String, EruptFieldModel> eruptFieldMap = eruptModel.getEruptFieldMap();
@@ -89,14 +93,16 @@ public class EruptJpaDao {
                     }
                 }
             }
-            page.setTotal((Long) countQuery.getSingleResult());
+            Object singleResult = countQuery.getSingleResult();
+            page.setTotal((Long) singleResult);
             if (page.getTotal() > 0) {
                 page.setList(query.setMaxResults(page.getPageSize()).setFirstResult((page.getPageIndex() - 1) * page.getPageSize()).getResultList());
             } else {
                 page.setList(new ArrayList<>(0));
             }
             return page;
-        });
+        };
+        return entityManagerService.getEntityManager(eruptModel.getClazz(), function);
     }
 
 }

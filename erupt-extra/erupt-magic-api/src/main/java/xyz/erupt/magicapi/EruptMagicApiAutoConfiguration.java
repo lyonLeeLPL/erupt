@@ -43,6 +43,7 @@ public class EruptMagicApiAutoConfiguration implements EruptModule {
     }
 
     @Override
+    // 数据初始化
     public List<MetaMenu> initMenus() {
         String menuKey = "magic-api";
         Map<Authorization, String> menus = new LinkedHashMap<>();

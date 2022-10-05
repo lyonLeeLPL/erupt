@@ -1,8 +1,26 @@
 package xyz.erupt.jpa.service;
 
+import cn.hutool.core.util.ReflectUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.internal.MetadataImpl;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.spi.MetadataImplementor;
+import org.hibernate.cache.spi.access.EntityDataAccess;
+import org.hibernate.cache.spi.access.NaturalIdDataAccess;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.id.IdentifierGenerator;
+import org.hibernate.id.factory.IdentifierGeneratorFactory;
+import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.mapping.PersistentClass;
+import org.hibernate.mapping.RootClass;
+import org.hibernate.metamodel.model.domain.NavigableRole;
+import org.hibernate.persister.entity.EntityPersister;
+import org.hibernate.persister.spi.PersisterCreationContext;
+import org.hibernate.persister.spi.PersisterFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -11,11 +29,13 @@ import xyz.erupt.annotation.config.Comment;
 import xyz.erupt.core.annotation.EruptDataSource;
 import xyz.erupt.core.prop.EruptProp;
 import xyz.erupt.core.prop.EruptPropDb;
+import xyz.erupt.core.util.EruptSpringUtil;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
+import javax.persistence.metamodel.Metamodel;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -32,6 +52,9 @@ public class EntityManagerService implements DisposableBean {
 
     @Resource
     private EruptProp eruptProp;
+
+    @Autowired
+    LocalContainerEntityManagerFactoryBean fb;
 
     private final Map<String, EntityManagerFactory> entityManagerFactoryMap = new HashMap<>();
 
@@ -148,6 +171,57 @@ public class EntityManagerService implements DisposableBean {
             value.close();
         }
         extEntityManagers.clear();
+    }
+
+    public void entityRegisterInJpa(Class aclass)  {
+        Metamodel metamodel = entityManager.getMetamodel();
+
+        SessionFactoryImpl nativeEntityManagerFactory = (SessionFactoryImpl)fb.getNativeEntityManagerFactory();
+        StandardServiceRegistry serviceRegistry = nativeEntityManagerFactory.getSessionFactoryOptions().getServiceRegistry();
+        IdentifierGenerator coupon = nativeEntityManagerFactory.getIdentifierGenerator("com.example.demo.model.mall.Coupon");
+
+        final PersisterFactory persisterFactory = nativeEntityManagerFactory.getServiceRegistry().getService( PersisterFactory.class );
+
+//        final PersisterCreationContext persisterCreationContext = new PersisterCreationContext() {
+//            @Override
+//            public SessionFactoryImplementor getSessionFactory() {
+//                return nativeEntityManagerFactory;
+//            }
+//
+//            @Override
+//            public MetadataImplementor getMetadata() {
+//                return mappingMetadata;
+//            }
+//        };
+//        final NavigableRole rootEntityRole = new NavigableRole( model.getRootClass().getEntityName() );
+//        final EntityDataAccess accessStrategy = sessionFactory.getCache().getEntityRegionAccess( rootEntityRole );
+//        final NaturalIdDataAccess naturalIdAccessStrategy = sessionFactory.getCache().getNaturalIdCacheRegionAccessStrategy( rootEntityRole );
+//
+//        final EntityPersister cp = persisterFactory.createEntityPersister(
+//                model,
+//                accessStrategy,
+//                naturalIdAccessStrategy,
+//                persisterCreationContext
+//        );
+//        entityPersisterMap.put( aclass.getName(), cp );
+
+
+
+//        nativeEntityManagerFactory.meta
+//        final MetadataImplementor metadata,
+//
+//        metadata.getEntityBindings().stream().filter( model -> !model.isInherited() ).forEach( model -> {
+//            IdentifierGenerator generator = model.getIdentifier().createIdentifierGenerator(
+//                    metadata.getIdentifierGeneratorFactory(),
+//                    jdbcServices.getJdbcEnvironment().getDialect(),
+//                    (RootClass) model
+//            );
+//            generator.initialize( sqlStringGenerationContext );
+//            identifierGenerators.put( model.getEntityName(), generator );
+//        } );
+//        metadata.validate();
+        System.out.println(coupon);
+
     }
 
 }

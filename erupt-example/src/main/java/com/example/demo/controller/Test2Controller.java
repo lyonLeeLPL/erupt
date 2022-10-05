@@ -1,18 +1,13 @@
 package com.example.demo.controller;
 
-import cn.hutool.core.util.ReflectUtil;
-import com.example.demo.utils.JPASchemaSchemaUpdate;
-//import com.example.demo.utils.RedefineClassAgent;
 import net.openhft.compiler.CachedCompiler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import xyz.erupt.core.service.EruptCoreService;
+
 import javax.persistence.EntityManagerFactory;
-import javax.tools.JavaFileManager;
-import java.lang.instrument.ClassDefinition;
-import java.lang.reflect.Method;
-import java.util.*;
 
 
 @RestController
@@ -26,9 +21,6 @@ public class Test2Controller {
 
     @Autowired
     private EntityManagerFactory emf;
-
-    @Autowired
-    private JPASchemaSchemaUpdate jpaSchemaSchemaUpdate;
 
     private final CachedCompiler cc = new CachedCompiler(null, null);
 
@@ -103,9 +95,9 @@ public class Test2Controller {
 //        ClassDefinition definition = new ClassDefinition(clazz, bytes);
 //        RedefineClassAgent.redefineClasses(definition);
 
-        Class aClass = cc.loadFromJava("com.example.demo.model.Test0925_abc", javaCode);
-        Object o = aClass.newInstance();  // instance of the object declared in 'javaCode'
-        jpaSchemaSchemaUpdate.runForClass(null,aClass);
+//        Class aClass = cc.loadFromJava("com.example.demo.model.Test0925_abc", javaCode);
+//        jpaSchemaSchemaUpdate.runForClass(aClass);
+
         return null;
     }
 

@@ -169,7 +169,7 @@ public class EruptTplService {
         Assert.notNull(engineAbstractTemplate, engine.name() + " jar not found");
 
         StringBuilderWriter stringBuilderWriter = new StringBuilderWriter();
-        engineAbstractTemplate.render(engineAbstractTemplate.getEngine(), "generator/erupt-code.java", map, stringBuilderWriter);
+        engineAbstractTemplate.render(engineAbstractTemplate.getEngine(), path, map, stringBuilderWriter);
         stringBuilderWriter.close();
 
         return stringBuilderWriter.toString();

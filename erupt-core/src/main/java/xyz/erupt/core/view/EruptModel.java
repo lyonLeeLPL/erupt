@@ -33,6 +33,8 @@ public final class EruptModel implements Cloneable {
 
     private String eruptName;
 
+    private String eruptMappingName;
+
     private JsonObject eruptJson;
 
     private List<EruptFieldModel> eruptFieldModels;

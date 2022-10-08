@@ -62,6 +62,18 @@
             <artifactId>oshi-core</artifactId>
             <version>6.2.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.ealenxie</groupId>
+            <artifactId>aop-log</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>xyz.erupt</groupId>
+            <artifactId>erupt-common</artifactId>
+            <version>1.10.14</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

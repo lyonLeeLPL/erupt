@@ -13,6 +13,7 @@ import xyz.erupt.annotation.Erupt;
 import xyz.erupt.annotation.EruptField;
 import xyz.erupt.annotation.sub_field.Edit;
 import xyz.erupt.annotation.sub_field.EditType;
+import xyz.erupt.common.constant.CommonConst;
 import xyz.erupt.core.exception.EruptAnnotationException;
 import xyz.erupt.core.module.EruptModuleInvoke;
 import xyz.erupt.core.toolkit.TimeRecorder;
@@ -104,6 +105,16 @@ public class EruptCoreService implements ApplicationRunner {
         eruptModel.getEruptFieldModels().sort(Comparator.comparingInt((a) -> a.getEruptField().sort()));
         // erupt annotation validate
         EruptAnnotationException.validateEruptInfo(eruptModel);
+
+        //
+        String eruptName = eruptModel.getEruptName();
+        if(eruptName.contains(CommonConst.SPECIAL_SPLIT_SYMBOL)){
+            String mappingName  = eruptName.split(CommonConst.SPECIAL_SPLIT_SYMBOL)[0];
+            eruptModel.setEruptName(mappingName);
+            eruptModel.setEruptMappingName(eruptName);
+        }else{
+            eruptModel.setEruptMappingName(eruptName);
+        }
         return eruptModel;
     }
 

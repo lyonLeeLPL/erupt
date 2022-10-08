@@ -1,6 +1,7 @@
 package xyz.erupt.core.controller;
 
 
+import com.github.AopLog;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping(EruptRestPath.ERUPT_BUILD)
+@AopLog(tag = "测试", stackTraceOnErr = true)
 public class EruptBuildController {
 
     @GetMapping("/{erupt}")

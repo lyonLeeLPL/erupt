@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import xyz.erupt.annotation.sub_erupt.RowOperation;
+import xyz.erupt.common.constant.CommonConst;
 import xyz.erupt.core.annotation.EruptRouter;
 import xyz.erupt.core.context.MetaContext;
 import xyz.erupt.core.context.MetaErupt;
@@ -151,11 +152,18 @@ public class EruptSecurityInterceptor implements AsyncHandlerInterceptor {
                     response.setStatus(HttpStatus.NOT_FOUND.value());
                     return false;
                 }
-                if (!authStr.equalsIgnoreCase(eruptModel.getEruptName())) {
+                // 检验字符串特殊处理
+                String targetVerifyEruptName = null;
+                if (eruptModel.getEruptName().contains(CommonConst.SPECIAL_SPLIT_SYMBOL)){
+                    targetVerifyEruptName = eruptModel.getEruptName().split(CommonConst.SPECIAL_SPLIT_SYMBOL)[0];
+                }else{
+                    targetVerifyEruptName = eruptModel.getEruptName();
+                }
+                if (!authStr.equalsIgnoreCase(targetVerifyEruptName)) {
                     response.setStatus(HttpStatus.NOT_FOUND.value());
                     return false;
                 }
-                if (null == eruptUserService.getEruptMenuByValue(eruptModel.getEruptName())) {
+                if (null == eruptUserService.getEruptMenuByValue(targetVerifyEruptName)) {
                     response.setStatus(HttpStatus.FORBIDDEN.value());
                     response.sendError(HttpStatus.FORBIDDEN.value());
                     return false;

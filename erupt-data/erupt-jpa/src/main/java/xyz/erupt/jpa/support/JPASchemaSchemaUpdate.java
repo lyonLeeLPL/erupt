@@ -7,6 +7,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -38,15 +39,25 @@ public class JPASchemaSchemaUpdate  {
 
         MetadataImplementor metadataImplementor = (MetadataImplementor) metadata.getMetadataBuilder().build();
 
-        SchemaExport schemaExport = new SchemaExport();
-        String outputFile = getOutputFilename();
-        schemaExport.setOutputFile(outputFile);
-        schemaExport.setDelimiter(";");
-        schemaExport.setFormat(false);
 
+        SchemaUpdate schemaUpdate = new SchemaUpdate();
+
+        schemaUpdate.setOutputFile(getOutputFilename());
+        schemaUpdate.setDelimiter(";");
+        schemaUpdate.setFormat(false);
+//
         EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
-        // 重新构建 数据库，把之前的数据备份然后往回塞。
-        schemaExport.create(enumSet, metadataImplementor);
+        schemaUpdate.execute( enumSet , metadataImplementor);
+
+//        SchemaExport schemaExport = new SchemaExport();
+//        String outputFile = getOutputFilename();
+//        schemaExport.setOutputFile(outputFile);
+//        schemaExport.setDelimiter(";");
+//        schemaExport.setFormat(false);
+//
+//        EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+//        // 重新构建 数据库，把之前的数据备份然后往回塞。
+//        schemaExport.create(enumSet, metadataImplementor);
     }
 
     private static String getOutputFilename() {

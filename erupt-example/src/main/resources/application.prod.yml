@@ -37,6 +37,12 @@ spring:
     url: jdbc:mysql://152.70.87.42:33306/erupt-example?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: 5601564a
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    p6spy:
+#      logging: file
+      logging: slf4j
+      log-file: spy.log
+      log-format: executionTime:%(executionTime) | sql:%(sqlSingleLine)
   jpa:
     show-sql: true
     format_sql: true

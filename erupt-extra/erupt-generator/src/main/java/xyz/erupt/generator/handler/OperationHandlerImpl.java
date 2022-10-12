@@ -59,6 +59,10 @@ public class OperationHandlerImpl implements OperationHandler<GeneratorClass, Vo
         EruptCoreService.putErupt(eruptModel.getEruptName(),eruptModel);
         EruptCoreService.getErupts().add(eruptModel);
 
+        //类 动态更新。
+
+        // 类 key value ， value
+
         // 往 entity manager注册
         EntityManagerService entityManagerService = EruptSpringUtil.getBean(EntityManagerService.class);
         entityManagerService.entityRegisterInJpa(aClass, eruptModel.getEruptName() );

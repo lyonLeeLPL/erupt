@@ -26,9 +26,17 @@ public class JPASchemaSchemaUpdate  {
     LocalContainerEntityManagerFactoryBean fb;
 
     public Class runForJavaCode(String className, String code) throws Exception {
+        code = recoverFromFM(code);
         Class aClass = cc.loadFromJava(className, code);
         runForClass(aClass);
         return aClass;
+    }
+
+    private String recoverFromFM(String code) {
+        code = code.replaceAll("&lt;","<");
+        code = code.replaceAll("&gt;",">");
+
+        return code;
     }
 
     public void runForClass(Class aClass) {

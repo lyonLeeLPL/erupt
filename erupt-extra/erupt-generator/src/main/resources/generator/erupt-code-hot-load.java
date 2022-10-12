@@ -12,6 +12,7 @@ import xyz.erupt.upms.model.base.HyperModel;
 import xyz.erupt.jpa.model.BaseModel;
 import java.util.Set;
 import java.util.Date;
+import com.example.demo.model.test.TestDict;
 
 <#assign erupt=rows[0]/>
 @Erupt(name = "${erupt.name}")

@@ -174,19 +174,15 @@ public class EntityManagerService implements DisposableBean {
     }
 
     @SneakyThrows
-    public void entityRegisterInJpa(Class aClass,String classSpecialName)  {
+    public void entityRegisterInJpa(Class aClass, String classSpecialName, MetadataSources metadata)  {
         MetamodelImpl metamodel = (MetamodelImpl) entityManager.getMetamodel();
         ConcurrentHashMap entityPersisterMap = (ConcurrentHashMap) ReflectUtil.getFieldValue(metamodel, "entityPersisterMap");
-        ConcurrentHashMap jpaEntityTypeMap = (ConcurrentHashMap) ReflectUtil.getFieldValue(metamodel, "jpaEntityTypeMap");
-        ConcurrentHashMap jpaEntityTypesByEntityName = (ConcurrentHashMap) ReflectUtil.getFieldValue(metamodel, "jpaEntityTypesByEntityName");
-
 
         SessionFactoryImpl nativeEntityManagerFactory = (SessionFactoryImpl)fb.getNativeEntityManagerFactory();
         HashMap identifierGenerators = (HashMap) ReflectUtil.getFieldValue(nativeEntityManagerFactory, "identifierGenerators");
         StandardServiceRegistry serviceRegistry = nativeEntityManagerFactory.getSessionFactoryOptions().getServiceRegistry();
 
         ///////
-        MetadataSources metadata = new MetadataSources(serviceRegistry);
         metadata.addAnnotatedClass(aClass);
 
         MetadataImplementor metadataImplementor = (MetadataImplementor) metadata.getMetadataBuilder().build();

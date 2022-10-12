@@ -4,6 +4,12 @@ import cn.hutool.core.util.RandomUtil;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.TemplateHashModel;
 import lombok.SneakyThrows;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.spi.MetadataImplementor;
+import org.hibernate.internal.SessionFactoryImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
 import xyz.erupt.annotation.Erupt;
 import xyz.erupt.annotation.fun.OperationHandler;
@@ -34,12 +40,27 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OperationHandlerImpl implements OperationHandler<GeneratorClass, Void> {
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    LocalContainerEntityManagerFactoryBean fb;
+
+
     //返回值为事件触发执行函数
     @Override
     @SneakyThrows
     public String exec(List<GeneratorClass> data, Void vo, String[] param) {
         Map<String, Object> map = new HashMap<>();
+        // get my source
+        SessionFactoryImpl nativeEntityManagerFactory = (SessionFactoryImpl)fb.getNativeEntityManagerFactory();
+        StandardServiceRegistry serviceRegistry = nativeEntityManagerFactory.getSessionFactoryOptions().getServiceRegistry();
+        MetadataSources metadata = new MetadataSources(serviceRegistry);
 
+        List<String> managedClassNames = fb.getPersistenceUnitInfo().getManagedClassNames();
+        for (String managedClassName : managedClassNames) {
+            metadata.addAnnotatedClassName(managedClassName);
+        }
+
+        //
         GeneratorClass generatorClass = data.get(0);
         String newClassName = generatorClass.getClassName() + CommonConst.SPECIAL_SPLIT_SYMBOL + RandomUtil.randomString(6);
         TemplateHashModel staticModels = BeansWrapper.getDefaultInstance().getStaticModels();
@@ -52,7 +73,7 @@ public class OperationHandlerImpl implements OperationHandler<GeneratorClass, Vo
         String code = eruptTplService.tplRender2Str(Tpl.Engine.FreeMarker, "generator/erupt-code-hot-load.java", map);
 
         JPASchemaSchemaUpdate jpaSchemaSchemaUpdate = EruptSpringUtil.getBean(JPASchemaSchemaUpdate.class);
-        Class aClass = jpaSchemaSchemaUpdate.runForJavaCode(newClassName, code);
+        Class aClass = jpaSchemaSchemaUpdate.runForJavaCode(newClassName, code,metadata);
 
         EruptModel eruptModel = EruptCoreService.initEruptModel(aClass);
         Erupt erupt = eruptModel.getErupt();
@@ -65,7 +86,7 @@ public class OperationHandlerImpl implements OperationHandler<GeneratorClass, Vo
 
         // 往 entity manager注册
         EntityManagerService entityManagerService = EruptSpringUtil.getBean(EntityManagerService.class);
-        entityManagerService.entityRegisterInJpa(aClass, eruptModel.getEruptName() );
+        entityManagerService.entityRegisterInJpa(aClass, eruptModel.getEruptName() ,metadata);
 
         return "this.msg.success('同步成功')";
         // return "this.msg.info('提示信息')"

@@ -8,6 +8,8 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.schema.TargetType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,7 @@ import xyz.erupt.tpl.service.EruptTplService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.metamodel.Metamodel;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,12 +74,11 @@ public class OperationHandlerImpl implements OperationHandler<GeneratorClass, Vo
 
         EruptTplService eruptTplService = EruptSpringUtil.getBean(EruptTplService.class);
         String code = eruptTplService.tplRender2Str(Tpl.Engine.FreeMarker, "generator/erupt-code-hot-load.java", map);
-
+        // 更新创建数据库
         JPASchemaSchemaUpdate jpaSchemaSchemaUpdate = EruptSpringUtil.getBean(JPASchemaSchemaUpdate.class);
         Class aClass = jpaSchemaSchemaUpdate.runForJavaCode(newClassName, code,metadata);
 
         EruptModel eruptModel = EruptCoreService.initEruptModel(aClass);
-        Erupt erupt = eruptModel.getErupt();
         EruptCoreService.putErupt(eruptModel.getEruptName(),eruptModel);
         EruptCoreService.getErupts().add(eruptModel);
 
@@ -87,11 +89,32 @@ public class OperationHandlerImpl implements OperationHandler<GeneratorClass, Vo
         // 往 entity manager注册
         EntityManagerService entityManagerService = EruptSpringUtil.getBean(EntityManagerService.class);
         entityManagerService.entityRegisterInJpa(aClass, eruptModel.getEruptName() ,metadata);
-
+//        runForClass(metadata);
         return "this.msg.success('同步成功')";
         // return "this.msg.info('提示信息')"
         // return "this.msg.error('错误信息')"
         // return "this.msg.success('成功信息')";
     }
+
+    public MetadataImplementor runForClass(MetadataSources metadata) {
+
+        MetadataImplementor metadataImplementor = (MetadataImplementor) metadata.getMetadataBuilder().build();
+
+//        SchemaUpdate schemaUpdate = new SchemaUpdate();
+//
+//        schemaUpdate.setOutputFile(getOutputFilename());
+//        schemaUpdate.setDelimiter(";");
+//        schemaUpdate.setFormat(false);
+////
+//        EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+//        schemaUpdate.execute( enumSet , metadataImplementor);//更新数据库，不创建表
+
+        SchemaExport schemaExport = new SchemaExport();
+        EnumSet<TargetType> enumSet2 = EnumSet.of(TargetType.DATABASE);
+        // 重新构建 数据库，把之前的数据备份然后往回塞。
+        schemaExport.createOnly(enumSet2, metadataImplementor);//创建表
+        return metadataImplementor;
+    }
+
 
 }

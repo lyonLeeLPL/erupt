@@ -4,8 +4,11 @@ package xyz.erupt.jpa.support;
 import net.openhft.compiler.CachedCompiler;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.spi.MetadataImplementor;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
+import org.hibernate.tool.schema.internal.SchemaCreatorImpl;
+import org.hibernate.tool.schema.spi.SchemaCreator;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -21,7 +24,7 @@ public class JPASchemaSchemaUpdate  {
     public Class runForJavaCode(String className, String code, MetadataSources metadata) throws Exception {
         code = recoverFromFM(code);
         Class aClass = cc.loadFromJava(className, code);
-        MetadataImplementor metadataImplementor = runForClass(aClass, metadata);
+        runForClass(aClass,metadata);
         return aClass;
     }
 
@@ -33,7 +36,7 @@ public class JPASchemaSchemaUpdate  {
     }
 
     public MetadataImplementor runForClass(Class aClass, MetadataSources metadata) {
-
+        metadata.addAnnotatedClass(aClass);
         MetadataImplementor metadataImplementor = (MetadataImplementor) metadata.getMetadataBuilder().build();
 
         SchemaUpdate schemaUpdate = new SchemaUpdate();
@@ -43,7 +46,7 @@ public class JPASchemaSchemaUpdate  {
         schemaUpdate.setFormat(false);
 //
         EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
-        schemaUpdate.execute( enumSet , metadataImplementor);
+        schemaUpdate.execute( enumSet , metadataImplementor);//更新数据库，不创建表
 
         return metadataImplementor;
     }

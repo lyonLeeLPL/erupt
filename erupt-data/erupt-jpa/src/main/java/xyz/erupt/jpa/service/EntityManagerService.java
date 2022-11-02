@@ -177,6 +177,7 @@ public class EntityManagerService implements DisposableBean {
     public void entityRegisterInJpa(Class aClass, String classSpecialName, MetadataSources metadata)  {
         MetamodelImpl metamodel = (MetamodelImpl) entityManager.getMetamodel();
         ConcurrentHashMap entityPersisterMap = (ConcurrentHashMap) ReflectUtil.getFieldValue(metamodel, "entityPersisterMap");
+        ConcurrentHashMap imports = (ConcurrentHashMap) ReflectUtil.getFieldValue(metamodel, "imports");
 
         SessionFactoryImpl nativeEntityManagerFactory = (SessionFactoryImpl)fb.getNativeEntityManagerFactory();
         HashMap identifierGenerators = (HashMap) ReflectUtil.getFieldValue(nativeEntityManagerFactory, "identifierGenerators");
@@ -214,12 +215,16 @@ public class EntityManagerService implements DisposableBean {
         KeyValue identifier = rootClass.getIdentifier();
         Object identifierGenerator1 = ReflectUtil.getFieldValue(identifier, "identifierGenerator");
 
+        // 两个 变量是为了？？？？？？？？？？？？？？？
         entityPersisterMap.put( classSpecialName, cp );
         identifierGenerators.put(classSpecialName, identifierGenerator1);
         identifierGenerators.put(aClass.getName(),identifierGenerator1); // 必须指定，才能位后面的进行初始化
 
         metamodel.initialize(metadataImplementor, JpaMetaModelPopulationSetting.IGNORE_UNSUPPORTED);
+        // 防止 jpa select 找不到
+        imports.put(classSpecialName,aClass.getName());
 
+        System.out.println(metadata);
     }
 
 }

@@ -9,7 +9,7 @@
     <parent>
         <groupId>xyz.erupt</groupId>
         <artifactId>erupt</artifactId>
-        <version>1.10.14</version>
+        <version>1.10.14-LC</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>xyz.erupt</groupId>
             <artifactId>erupt-common</artifactId>
-            <version>1.10.14</version>
+            <version>1.10.14-LC</version>
         </dependency>
     </dependencies>
 

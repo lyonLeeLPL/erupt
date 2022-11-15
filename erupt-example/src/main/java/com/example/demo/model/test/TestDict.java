@@ -5,13 +5,9 @@ package com.example.demo.model.test;/*
 
 import javax.persistence.*;
 import xyz.erupt.annotation.*;
-import xyz.erupt.annotation.sub_erupt.*;
 import xyz.erupt.annotation.sub_field.*;
 import xyz.erupt.annotation.sub_field.sub_edit.*;
-import xyz.erupt.upms.model.base.HyperModel;
 import xyz.erupt.jpa.model.BaseModel;
-import java.util.Set;
-import java.util.Date;
 
 @Erupt(name = "testDict")
 @Table(name = "test_dict")

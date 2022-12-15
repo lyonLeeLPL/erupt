@@ -1,8 +1,3 @@
-/*
- * Copyright © 2020-2035 erupt.xyz All rights reserved.
- * Author: YuePeng (erupts@126.com)
- */
-
 import javax.persistence.*;
 import xyz.erupt.annotation.*;
 import xyz.erupt.annotation.sub_erupt.*;

@@ -76,6 +76,3 @@ server:
     includeStacktrace: ALWAYS
     includeMessage: ALWAYS
   port : 18082
-
-config-compiler:
-  jarRootPath: C:\works2\erupt\erupt-example\target\erupt-example-0.0.1-SNAPSHOT\BOOT-INF\lib

@@ -4,12 +4,10 @@ package xyz.erupt.jpa.support;
 import net.openhft.compiler.CachedCompiler;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.spi.MetadataImplementor;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
-import org.hibernate.tool.schema.internal.SchemaCreatorImpl;
-import org.hibernate.tool.schema.spi.SchemaCreator;
 import org.springframework.stereotype.Component;
+import xyz.erupt.common.utils.CommonUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

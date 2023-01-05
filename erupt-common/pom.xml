@@ -7,6 +7,14 @@
 
     <artifactId>erupt-common</artifactId>
     <description>erupt-common or const symbol for others </description>
+    <dependencies>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>5.8.10</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
     <parent>
         <groupId>xyz.erupt</groupId>

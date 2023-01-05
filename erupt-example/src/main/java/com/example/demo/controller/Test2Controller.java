@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import net.openhft.compiler.CachedCompiler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +20,6 @@ public class Test2Controller {
 
     @Autowired
     private EntityManagerFactory emf;
-
-    private final CachedCompiler cc = new CachedCompiler(null, null);
 
     @RequestMapping("/test33")
     public Object test33( ) throws Exception {

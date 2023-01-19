@@ -77,7 +77,12 @@ public class GeneratorClass extends MetaModel implements Tpl.TplHandler {
 //    )
 //    private Boolean createField;
 
-    @Column(length = 10000 )
+    @EruptField(
+            views = @View(title = "真正的类名"),
+            edit = @Edit(title = "真正的类名")
+    )
+    private String afterClassName;
+
     @EruptField(
             views = @View(title = "源代码"),
             edit = @Edit(title = "源代码", type = EditType.TEXTAREA)

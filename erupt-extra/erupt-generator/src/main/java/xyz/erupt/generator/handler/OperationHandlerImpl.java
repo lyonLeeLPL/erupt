@@ -23,7 +23,6 @@ import xyz.erupt.core.util.EruptSpringUtil;
 import xyz.erupt.core.view.EruptModel;
 import xyz.erupt.generator.base.GeneratorType;
 import xyz.erupt.generator.model.GeneratorClass;
-import xyz.erupt.jpa.dao.EruptJpaDao;
 import xyz.erupt.jpa.service.EntityManagerService;
 import xyz.erupt.jpa.support.JPASchemaSchemaUpdate;
 import xyz.erupt.tpl.service.EruptTplService;
@@ -94,11 +93,11 @@ public class OperationHandlerImpl implements OperationHandler<GeneratorClass, Vo
         //类 动态更新。
 
         // 类 key value ， value
-
         // 往 entity manager注册
         EntityManagerService entityManagerService = EruptSpringUtil.getBean(EntityManagerService.class);
         entityManagerService.entityRegisterInJpa(aClass, eruptModel.getEruptName() ,metadata);
 //        runForClass(metadata);
+        // 更新
         return "this.msg.success('同步成功')";
         // return "this.msg.info('提示信息')"
         // return "this.msg.error('错误信息')"

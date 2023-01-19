@@ -14,13 +14,13 @@ public class AppStartupRunner implements ApplicationRunner {
     @Value("${config-compiler.jarRootPath}")
     String jarRootPath;
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args)  {
         System.out.println("初始化代码");
         jarLoad();
     }
 
     private void jarLoad(){
-        if (isStartupFromJar()){
+        if (isStartupFromJar(this.getClass())){
             String property = System.getProperty("java.class.path");
             System.out.println(property);
             StringBuffer stringBuffer = new StringBuffer(property);

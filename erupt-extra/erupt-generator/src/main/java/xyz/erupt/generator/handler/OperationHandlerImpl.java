@@ -4,6 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.TemplateHashModel;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.spi.MetadataImplementor;
@@ -74,6 +75,14 @@ public class OperationHandlerImpl implements OperationHandler<GeneratorClass, Vo
 
         EruptTplService eruptTplService = EruptSpringUtil.getBean(EruptTplService.class);
         String code = eruptTplService.tplRender2Str(Tpl.Engine.FreeMarker, "generator/erupt-code-hot-load.java", map);
+        if (StringUtils.isNotBlank(generatorClass.getSourceCode()) &&  generatorClass.getSourceCode().length() > 100 ){
+            code = generatorClass.getSourceCode();
+            String[] s = newClassName.split("_");
+
+            String origin = s[0];
+            // 处理，替换
+            code= code.replace(origin,newClassName);
+        }
         // 更新创建数据库
         JPASchemaSchemaUpdate jpaSchemaSchemaUpdate = EruptSpringUtil.getBean(JPASchemaSchemaUpdate.class);
         Class aClass = jpaSchemaSchemaUpdate.runForJavaCode(newClassName, code,metadata);
